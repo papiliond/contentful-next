@@ -53,3 +53,5 @@ export type IEntry = IKnowledgeArticle;
 export type LOCALE_CODE = "en-US";
 
 export type CONTENTFUL_DEFAULT_LOCALE_CODE = "en-US";
+
+export type KnowledgeArticle = Entry<IKnowledgeArticleFields>;

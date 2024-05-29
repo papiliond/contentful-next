@@ -1,9 +1,12 @@
+import { KnowledgeArticle } from "@/@types/generated/contentful";
 import { getAllArticles } from "@/lib/api";
+import { draftMode } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
 
 export default async function Home() {
-  const articles = await getAllArticles();
+  const { isEnabled: isDraftMode } = draftMode();
+  const articles = await getAllArticles(3, isDraftMode);
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24 bg-white">
@@ -11,7 +14,7 @@ export default async function Home() {
         <div className="mx-auto container space-y-12 px-4 md:px-6">
           <div className="flex flex-col items-center justify-center space-y-4 text-center">
             <div className="space-y-2">
-              <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl">
+              <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl dark:text-zinc-700">
                 Welcome to our Knowledge Base
               </h1>
               <p className="max-w-[900px] text-zinc-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-zinc-400">
@@ -22,8 +25,9 @@ export default async function Home() {
           </div>
           <div className="space-y-12">
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-              {articles.map((article: any) => (
-                  <article key={article.sys.id} className="h-full flex flex-col rounded-lg shadow-lg overflow-hidden">
+              {articles.map((article: KnowledgeArticle) => (
+                <Link href={`/articles/${article.slug}`} key={article.sys.id} title={article.title}>
+                  <article className="h-full flex flex-col rounded-lg shadow-lg overflow-hidden">
                     <Image
                       alt="placeholder"
                       className="aspect-[4/3] object-cover w-full"
@@ -32,11 +36,9 @@ export default async function Home() {
                       width="350"
                     />
                     <div className="flex-1 p-6">
-                      <Link href={`/articles/${article.slug}`}>
-                        <h3 className="text-2xl font-bold leading-tight text-zinc-900 dark:text-zinc-50  py-4">
-                          {article.title}
-                        </h3>
-                      </Link>
+                      <h3 className="text-2xl font-bold leading-tight text-zinc-900 dark:text-zinc-700 py-4">
+                        {article.title}
+                      </h3>
                       <div className="inline-block rounded-full bg-zinc-100 px-3 py-1 text-sm font-semibold text-zinc-800">
                         {article.categoryName}
                       </div>
@@ -56,6 +58,7 @@ export default async function Home() {
                       </div>
                     </div>
                   </article>
+                </Link>
               ))}
             </div>
           </div>
